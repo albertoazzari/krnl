@@ -81,7 +81,7 @@ fxhash = { workspace = true, optional = true }
 itertools.workspace = true
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
-vulkano = { version = "0.33.0", optional = true, default-features = false }
+vulkano = { git = "https://github.com/albertoazzari/vulkano.git", optional = true, default-features = false }
 ash = { version = "0.37.1", optional = true }
 crossbeam-channel = { version = "0.5.8", optional = true }
 
