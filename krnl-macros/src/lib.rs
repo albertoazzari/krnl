@@ -1,5 +1,5 @@
 //! Macros for [krnl](https://docs.rs/krnl).
-#![forbid(unsafe_code)]
+// #![forbid(unsafe_code)]
 
 use derive_syn_parse::Parse;
 use fxhash::FxHashMap;
@@ -9,9 +9,7 @@ use quote::{format_ident, quote, ToTokens};
 use semver::Version;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{
-    fmt::{self, Debug},
-    str::FromStr,
-    sync::OnceLock,
+    fmt::{self, Debug}, slice::from_raw_parts, str::FromStr, sync::OnceLock
 };
 use syn::{
     parse::{Parse, ParseStream},
@@ -1832,6 +1830,17 @@ fn __krnl_cache_impl(input: TokenStream2) -> Result<TokenStream2> {
         .filter(|kernel| {
             let name = &kernel.name;
             let mut iter = name.rsplit("::");
+
+    
+            let bytes = unsafe {
+                from_raw_parts(
+                    kernel.spirv.as_ptr() as *const u8,
+                    kernel.spirv.len() * std::mem::size_of::<u32>(),
+                )
+            };
+
+
+            std::fs::write(format!("/tmp/shaders/{}.spv", name), bytes).unwrap();
             if input.kernel != iter.next().unwrap() {
                 return false;
             }
